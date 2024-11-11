@@ -9,8 +9,8 @@ class WeatherService {
   static const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
   final String apiKey;
   WeatherService(this.apiKey);
-  Future<Weather> getWeather(String city) async {
-    final response = await http.get(Uri.parse('$BASE_URL?q=$city&appid=$apiKey'));
+  Future<Weather> getWeather(String lat,String lon,String city) async {
+    final response = await http.get(Uri.parse('$BASE_URL?lat=$lat&lon=$lon&units=metric&appid=$apiKey'));
     if (response.statusCode == 200) {
       return Weather.fromJson(jsonDecode(response.body));
     } else {
@@ -28,5 +28,15 @@ class WeatherService {
     List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
     String? city = placemarks[0].locality;
     return city ?? '';
+  }
+
+  Future<Position> getCurrentLocation() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+
+    Position position = await Geolocator.getCurrentPosition();
+    return position;
   }
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 Widget customDropDown(List<String> items, String value, void onChange(val)) {
     return DropdownButton<String>(
-        padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 18.0),
+        padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 18.0),
         value: value,
         onChanged: (val){
             onChange(val);

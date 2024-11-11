@@ -1,7 +1,9 @@
 import 'package:clima/models/weather_model.dart';
 import 'package:clima/services/weather_service.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:lottie/lottie.dart';
+
 class WeatherPage extends StatefulWidget {
   const WeatherPage({super.key});
 
@@ -15,8 +17,9 @@ class _WeatherPageState extends State<WeatherPage> {
 
   _fetchWeather() async {
     String cityName = await _weatherService.getCurrentCity();
+    Position position = await _weatherService.getCurrentLocation();
     try {
-      final weather = await _weatherService.getWeather(cityName);
+      final weather = await _weatherService.getWeather(position.latitude.toString(),position.longitude.toString(),cityName);
       setState(() {
         _weather = weather;
       });
@@ -26,8 +29,8 @@ class _WeatherPageState extends State<WeatherPage> {
   }
 
   String getWeatherAnimation(String? mainCondition) {
-    if(mainCondition == null) return 'assets/sun.json';
-    switch(mainCondition) {
+    if (mainCondition == null) return 'assets/sun.json';
+    switch (mainCondition) {
       case 'clear':
         return 'assets/sun.json';
       case 'clouds':
@@ -50,15 +53,21 @@ class _WeatherPageState extends State<WeatherPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-        Text(_weather?.cityName ?? 'Loading...'),
-        Lottie.asset(getWeatherAnimation(_weather?.mainCondition)),
-        Text('Temperature: ${_weather?.temperature.round().toString()}°C'),
-        Text(_weather?.mainCondition ?? ""),
-      ],),
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(_weather?.cityName ?? 'Loading...'),
+              Lottie.asset(getWeatherAnimation(_weather?.mainCondition)),
+              Text('Temperature: ${_weather?.temperature.toString()}°C'),
+              Text(_weather?.mainCondition ?? ""),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
